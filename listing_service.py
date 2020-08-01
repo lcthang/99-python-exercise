@@ -6,6 +6,7 @@ import logging
 import json
 import time
 
+
 class App(tornado.web.Application):
 
     def __init__(self, handlers, **kwargs):
@@ -32,11 +33,13 @@ class App(tornado.web.Application):
         )
         self.db.commit()
 
+
 class BaseHandler(tornado.web.RequestHandler):
     def write_json(self, obj, status_code=200):
         self.set_header("Content-Type", "application/json")
         self.set_status(status_code)
         self.write(json.dumps(obj))
+
 
 # /listings
 class ListingsHandler(BaseHandler):
@@ -47,16 +50,24 @@ class ListingsHandler(BaseHandler):
         page_size = self.get_argument("page_size", 10)
         try:
             page_num = int(page_num)
-        except:
-            logging.exception("Error while parsing page_num: {}".format(page_num))
-            self.write_json({"result": False, "errors": "invalid page_num"}, status_code=400)
+        except Exception:
+            logging.exception(
+                "Error while parsing page_num: {}".format(page_num))
+            self.write_json({
+                "result": False,
+                "errors": "invalid page_num"
+            }, status_code=400)
             return
 
         try:
             page_size = int(page_size)
-        except:
-            logging.exception("Error while parsing page_size: {}".format(page_size))
-            self.write_json({"result": False, "errors": "invalid page_size"}, status_code=400)
+        except Exception:
+            logging.exception(
+                "Error while parsing page_size: {}".format(page_size))
+            self.write_json({
+                "result": False,
+                "errors": "invalid page_size"
+            }, status_code=400)
             return
 
         # Parsing user_id param
@@ -64,8 +75,11 @@ class ListingsHandler(BaseHandler):
         if user_id is not None:
             try:
                 user_id = int(user_id)
-            except:
-                self.write_json({"result": False, "errors": "invalid user_id"}, status_code=400)
+            except Exception:
+                self.write_json({
+                    "result": False,
+                    "errors": "invalid user_id"
+                }, status_code=400)
                 return
 
         # Building select statement
@@ -88,7 +102,8 @@ class ListingsHandler(BaseHandler):
 
         listings = []
         for row in results:
-            fields = ["id", "user_id", "listing_type", "price", "created_at", "updated_at"]
+            fields = ["id", "user_id", "listing_type",
+                      "price", "created_at", "updated_at"]
             listing = {
                 field: row[field] for field in fields
             }
@@ -108,11 +123,15 @@ class ListingsHandler(BaseHandler):
         user_id_val = self._validate_user_id(user_id, errors)
         listing_type_val = self._validate_listing_type(listing_type, errors)
         price_val = self._validate_price(price, errors)
-        time_now = int(time.time() * 1e6) # Converting current time to microseconds
+        # Converting current time to microseconds
+        time_now = int(time.time() * 1e6)
 
         # End if we have any validation errors
         if len(errors) > 0:
-            self.write_json({"result": False, "errors": errors}, status_code=400)
+            self.write_json({
+                "result": False,
+                "errors": errors
+            }, status_code=400)
             return
 
         # Proceed to store the listing in our db
@@ -127,7 +146,10 @@ class ListingsHandler(BaseHandler):
 
         # Error out if we fail to retrieve the newly created listing
         if cursor.lastrowid is None:
-            self.write_json({"result": False, "errors": ["Error while adding listing to db"]}, status_code=500)
+            self.write_json({
+                "result": False,
+                "errors": ["Error while adding listing to db"]
+            }, status_code=500)
             return
 
         listing = dict(
@@ -146,13 +168,15 @@ class ListingsHandler(BaseHandler):
             user_id = int(user_id)
             return user_id
         except Exception as e:
-            logging.exception("Error while converting user_id to int: {}".format(user_id))
+            logging.exception(
+                "Error while converting user_id to int: {}".format(user_id))
             errors.append("invalid user_id")
             return None
 
     def _validate_listing_type(self, listing_type, errors):
         if listing_type not in {"rent", "sale"}:
-            errors.append("invalid listing_type. Supported values: 'rent', 'sale'")
+            errors.append(
+                "invalid listing_type. Supported values: 'rent', 'sale'")
             return None
         else:
             return listing_type
@@ -162,7 +186,8 @@ class ListingsHandler(BaseHandler):
         try:
             price = int(price)
         except Exception as e:
-            logging.exception("Error while converting price to int: {}".format(price))
+            logging.exception(
+                "Error while converting price to int: {}".format(price))
             errors.append("invalid price. Must be an integer")
             return None
 
@@ -172,11 +197,13 @@ class ListingsHandler(BaseHandler):
         else:
             return price
 
+
 # /listings/ping
 class PingHandler(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def get(self):
         self.write("pong!")
+
 
 def make_app(options):
     return App([
@@ -184,9 +211,11 @@ def make_app(options):
         (r"/listings", ListingsHandler),
     ], debug=options.debug)
 
+
 if __name__ == "__main__":
     # Define settings/options for the web app
-    # Specify the port number to start the web app on (default value is port 6000)
+    # Specify the port number to start the web app on (default value is port
+    # 6000)
     tornado.options.define("port", default=6000)
     # Specify whether the app should run in debug mode
     # Debug mode restarts the app automatically on file changes
@@ -201,7 +230,8 @@ if __name__ == "__main__":
     # Create web app
     app = make_app(options)
     app.listen(options.port)
-    logging.info("Starting listing service. PORT: {}, DEBUG: {}".format(options.port, options.debug))
+    logging.info("Starting listing service. PORT: {}, DEBUG: {}".format(
+        options.port, options.debug))
 
     # Start event loop
     tornado.ioloop.IOLoop.instance().start()
