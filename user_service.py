@@ -47,7 +47,7 @@ class UsersHandler(BaseHandler):
         # /users/{id}
         if user_id:
             cursor = self.application.db.cursor()
-            results = cursor.execute("SELECT * FROM users WHERE id=?", user_id)
+            results = cursor.execute("SELECT * FROM users WHERE id=%s" % user_id)
 
             for row in results:
                 user = {field: row[field] for field in self.USER_FIELDS}
