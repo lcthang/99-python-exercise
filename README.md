@@ -35,3 +35,5 @@ python user_service.py
 # Run the public api
 python public_api.py
 ```
+
+## Author: Le Cong Thang (Terence Le)
