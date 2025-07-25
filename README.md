@@ -36,4 +36,4 @@ python user_service.py
 python public_api.py
 ```
 
-## Author: Le Cong Thang (Terence Le)
+## Author: Le Cong Thang
