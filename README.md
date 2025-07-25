@@ -1,5 +1,5 @@
-# Backend Tech Challenge
-A microservice using Python, [Tornado](http://tornadoweb.org/) (Web Framework), writing non-blocking/asynchronous code, and a microservices architecture.
+# Python Microservice
+Using Python, [Tornado](http://tornadoweb.org/) (Web Framework), writing non-blocking/asynchronous code, and a microservices architecture.
 
 ## Architecture
 - listing_service.py: listing microservice
