@@ -1,15 +1,15 @@
 # Backend Tech Challenge
-An exercise to assess your skills with Python, [Tornado](http://tornadoweb.org/) (Web Framework), writing non-blocking/asynchronous code, and microservices architecture.
+A microservice using Python, [Tornado](http://tornadoweb.org/) (Web Framework), writing non-blocking/asynchronous code, and a microservices architecture.
 
 ## Architecture
 - listing_service.py: listing microservice
 - user_service.py: user microservice
 - public_api.py: API gateway for external parties
 - listings.db: db for listing microservice
-- users.db: db for user microserivce
+- users.db: db for user microservice
 
 ## Setup
-Setup in Windows:
+Set up in Windows:
 ```bash
 # Locate the path for the Python 3 installation
 C:\Python3
